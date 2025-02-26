@@ -15,25 +15,31 @@ const ImageGenerator = ({ textData, backgroundImageUrl, onGenerated }) => {
       // Set canvas dimensions to match the background image
       canvas.width = img.width;
       canvas.height = img.height;
-      
+
       // Draw the background image
       ctx.drawImage(img, 0, 0);
-      
-      // Draw the Title
-      ctx.font = 'bold 30px Arial';
-      ctx.fillStyle = 'white';
+
+      // Set a text color that contrasts well with your background.
+      ctx.fillStyle = 'black';
+
+      // Row 1: Title in bold, centered
       ctx.textAlign = 'center';
-      ctx.fillText(textData.title, canvas.width / 2, 50);
-      
-      // Draw the Content
-      ctx.font = '20px Arial';
-      ctx.fillText(textData.content, canvas.width / 2, canvas.height / 2);
-      
-      // Draw the Author
-      ctx.font = 'italic 18px Arial';
-      ctx.fillText(`By ${textData.author}`, canvas.width / 2, canvas.height - 30);
-      
-      // Callback with the generated image data URL
+      ctx.font = 'bold 48px Arial';
+      // Adjust the Y position as needed (25% of canvas height)
+      ctx.fillText(textData.title, canvas.width / 2, canvas.height * 0.25);
+
+      // Row 2: Content (Cuento), centered
+      ctx.font = '36px Arial';
+      // Adjust the Y position as needed (50% of canvas height)
+      ctx.fillText(textData.content, canvas.width / 2, canvas.height * 0.5);
+
+      // Row 3: Author, aligned to the right
+      ctx.textAlign = 'right';
+      ctx.font = '36px Arial';
+      // Adjust the Y position as needed (75% of canvas height), and use a margin from the right edge
+      ctx.fillText(textData.author, canvas.width - 20, canvas.height * 0.75);
+
+      // Optionally, call onGenerated with the resulting image data URL
       if (onGenerated) {
         onGenerated(canvas.toDataURL('image/png'));
       }
@@ -48,3 +54,4 @@ const ImageGenerator = ({ textData, backgroundImageUrl, onGenerated }) => {
 };
 
 export default ImageGenerator;
+
