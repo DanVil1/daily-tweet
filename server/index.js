@@ -18,10 +18,10 @@ app.post('/api/post-to-twitter', async (req, res) => {
     const { imageData, textData } = req.body; // Expecting a Base64 image and text data
     // Initialize the Twitter client (replace placeholders with your actual credentials)
     const client = new TwitterApi({
-      appKey: 'TsSyBucdAmHEh1JB5yuUGMP8S',
-      appSecret: 'H0doPfVlneYOLdi12m6TxbPkmjOTllWEuQXxDC9Zar5CWDzYGM',
-      accessToken: '1894559668586123268-fJY2XNJTM2vYMHnIegh7paUE6inU8x',
-      accessSecret: 'PougzjkpYsVyAEpDA9gqwnWlqsWj2rUhpGdmTs94WH037',
+      appKey: '',
+      appSecret: '',
+      accessToken: '-',
+      accessSecret: '',
     });
     // Remove any header from the base64 image string (if present)
     const base64Image = imageData.includes(',') ? imageData.split(',')[1] : imageData;
