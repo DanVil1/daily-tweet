@@ -34,7 +34,7 @@ app.post('/api/post-to-twitter', async (req, res) => {
     });
 
     // MAX 17 PER DAY 
-    // res.json({ success: true, message: 'Tweet posted successfully', tweet });
+    res.json({ success: true, message: 'Tweet posted successfully', tweet });
     
   } catch (error) {
     console.error(error);

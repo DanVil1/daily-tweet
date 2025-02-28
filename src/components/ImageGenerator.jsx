@@ -19,27 +19,37 @@ const ImageGenerator = ({ textData, backgroundImageUrl, onGenerated }) => {
       // Draw the background image
       ctx.drawImage(img, 0, 0);
 
-      // Set a text color that contrasts well with your background.
+      // Set text alignment
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
       ctx.fillStyle = 'black';
 
-      // Row 1: Title in bold, centered
-      ctx.textAlign = 'center';
-      ctx.font = 'bold 48px Arial';
-      // Adjust the Y position as needed (25% of canvas height)
-      ctx.fillText(textData.title, canvas.width / 2, canvas.height * 0.25);
+      // Dynamically calculate font sizes based on canvas height
+      const titleFontSize = canvas.height * 0.05;   // 5% of image height
+      const contentFontSize = canvas.height * 0.04;   // 4% of image height
+      const authorFontSize = canvas.height * 0.04;    // 4% of image height
+      const spacing = canvas.height * 0.02;           // 2% of image height
 
-      // Row 2: Content (Cuento), centered
-      ctx.font = '36px Arial';
-      // Adjust the Y position as needed (50% of canvas height)
-      ctx.fillText(textData.content, canvas.width / 2, canvas.height * 0.5);
+      // Calculate the total height of the text block
+      const totalHeight =
+        titleFontSize + spacing + contentFontSize + spacing + authorFontSize;
 
-      // Row 3: Author, aligned to the right
-      ctx.textAlign = 'right';
-      ctx.font = '36px Arial';
-      // Adjust the Y position as needed (75% of canvas height), and use a margin from the right edge
-      ctx.fillText(textData.author, canvas.width - 20, canvas.height * 0.75);
+      // Starting Y position to vertically center the text block
+      const startY = (canvas.height - totalHeight) / 2;
 
-      // Optionally, call onGenerated with the resulting image data URL
+      // Draw Title (bold)
+      ctx.font = `bold ${titleFontSize}px Arial`;
+      ctx.fillText(textData.title, canvas.width / 2, startY);
+
+      // Draw Content (Cuento)
+      ctx.font = `${contentFontSize}px Arial`;
+      ctx.fillText(textData.content, canvas.width / 2, startY + titleFontSize + spacing);
+
+      // Draw Author (aligned center, could adjust if you prefer right alignment)
+      ctx.font = `${authorFontSize}px Arial`;
+      ctx.fillText(textData.author, canvas.width / 2, startY + titleFontSize + spacing + contentFontSize + spacing);
+
+      // Call onGenerated callback with resulting image
       if (onGenerated) {
         onGenerated(canvas.toDataURL('image/png'));
       }
@@ -47,11 +57,10 @@ const ImageGenerator = ({ textData, backgroundImageUrl, onGenerated }) => {
   }, [textData, backgroundImageUrl, onGenerated]);
 
   return (
-    <div>
-      <canvas ref={canvasRef} />
+    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <canvas ref={canvasRef} style={{ width: '100%', height: 'auto' }} />
     </div>
   );
 };
 
 export default ImageGenerator;
-
