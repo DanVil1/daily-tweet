@@ -45,20 +45,14 @@ const MainPage = () => {
           onGenerated={handleImageGenerated}
         />
       )}
-      {generatedImage && (
-        <div>
-          <h2>Preview of Generated Image</h2>
-          <img src={generatedImage} alt="Generated daily post" />
-        </div>
-      )}
-      <h2>History</h2>
+      {/* <h2>History</h2>
       <ul>
         {history.map((entry, index) => (
           <li key={index}>
             <strong>{entry.title}</strong> - {new Date(entry.date).toLocaleDateString()}
           </li>
         ))}
-      </ul>
+      </ul> */}
     </div>
   );
 };
