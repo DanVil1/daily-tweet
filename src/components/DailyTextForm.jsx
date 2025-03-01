@@ -1,4 +1,3 @@
-// src/DailyTextForm.jsx
 import { useState } from 'react';
 
 const DailyTextForm = ({ onSubmit }) => {
