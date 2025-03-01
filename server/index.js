@@ -29,7 +29,7 @@ app.post('/api/post-to-twitter', async (req, res) => {
     const mediaId = await client.v1.uploadMedia(imageBuffer, { ext: 'jpg', mimeType: 'image/jpeg' });
 
     const tweet = await client.v2.tweet({
-      text: '.',
+      text: '',
       media: { media_ids: [mediaId] }
     });
 
