@@ -3,6 +3,27 @@ import { useRef, useEffect } from 'react';
 
 const ImageGenerator = ({ textData, backgroundImageUrl, onGenerated }) => {
   const canvasRef = useRef(null);
+  const hasGenerated = useRef(false);
+
+  // Helper function to wrap text into multiple lines
+  const wrapText = (context, text, maxWidth) => {
+    const words = text.split(' ');
+    let lines = [];
+    let line = '';
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + ' ';
+      const metrics = context.measureText(testLine);
+      const testWidth = metrics.width;
+      if (testWidth > maxWidth && n > 0) {
+        lines.push(line.trim());
+        line = words[n] + ' ';
+      } else {
+        line = testLine;
+      }
+    }
+    lines.push(line.trim());
+    return lines;
+  };
 
   useEffect(() => {
     if (!textData) return;
@@ -12,46 +33,62 @@ const ImageGenerator = ({ textData, backgroundImageUrl, onGenerated }) => {
     img.src = backgroundImageUrl;
 
     img.onload = () => {
-      // Set canvas dimensions to match the background image
+      // Set canvas dimensions to the image dimensions
       canvas.width = img.width;
       canvas.height = img.height;
 
       // Draw the background image
       ctx.drawImage(img, 0, 0);
 
-      // Set text alignment
+      // Set text styling defaults
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillStyle = 'black';
+      const fontFamily = 'Georgia';
 
       // Dynamically calculate font sizes based on canvas height
-      const titleFontSize = canvas.height * 0.05;   // 5% of image height
-      const contentFontSize = canvas.height * 0.04;   // 4% of image height
-      const authorFontSize = canvas.height * 0.04;    // 4% of image height
-      const spacing = canvas.height * 0.02;           // 2% of image height
+      const titleFontSize = canvas.height * 0.06;    // 6% for title
+      const contentFontSize = canvas.height * 0.045;   // 4.5% for content
+      const authorFontSize = canvas.height * 0.035;    // 3.5% for author
+      const spacing = canvas.height * 0.02;            // 2% spacing
 
-      // Calculate the total height of the text block
-      const totalHeight =
-        titleFontSize + spacing + contentFontSize + spacing + authorFontSize;
+      // Maximum width for content wrapping (80% of canvas width)
+      const maxContentWidth = canvas.width * 0.8;
 
-      // Starting Y position to vertically center the text block
+      // Prepare title (force uppercase)
+      const titleText = textData.title.toUpperCase();
+
+      // Set font for content and wrap text
+      ctx.font = `${contentFontSize}px ${fontFamily}`;
+      const contentLines = wrapText(ctx, textData.content, maxContentWidth);
+      const contentBlockHeight = contentLines.length * (contentFontSize + spacing);
+
+      // Total block height: title + spacing + content block + spacing + author
+      const totalHeight = titleFontSize + spacing + contentBlockHeight + spacing + authorFontSize;
       const startY = (canvas.height - totalHeight) / 2;
 
-      // Draw Title (bold)
-      ctx.font = `bold ${titleFontSize}px Arial`;
-      ctx.fillText(textData.title, canvas.width / 2, startY);
+      // Draw Title
+      ctx.font = `bold ${titleFontSize}px ${fontFamily}`;
+      ctx.fillText(titleText, canvas.width / 2, startY);
 
-      // Draw Content (Cuento)
-      ctx.font = `${contentFontSize}px Arial`;
-      ctx.fillText(textData.content, canvas.width / 2, startY + titleFontSize + spacing);
+      // Draw Content (each line)
+      ctx.font = `${contentFontSize}px ${fontFamily}`;
+      let currentY = startY + titleFontSize + spacing;
+      contentLines.forEach(line => {
+        ctx.fillText(line, canvas.width / 2, currentY);
+        currentY += contentFontSize + spacing;
+      });
 
-      // Draw Author (aligned center, could adjust if you prefer right alignment)
-      ctx.font = `${authorFontSize}px Arial`;
-      ctx.fillText(textData.author, canvas.width / 2, startY + titleFontSize + spacing + contentFontSize + spacing);
+      // Draw Author (smaller font)
+      ctx.font = `${authorFontSize}px ${fontFamily}`;
+      ctx.fillText(textData.author, canvas.width / 2, currentY + spacing);
 
-      // Call onGenerated callback with resulting image
-      if (onGenerated) {
-        onGenerated(canvas.toDataURL('image/png'));
+      // Call onGenerated callback once with the data URL
+      if (!hasGenerated.current) {
+        hasGenerated.current = true;
+        if (onGenerated) {
+          onGenerated(canvas.toDataURL('image/png'));
+        }
       }
     };
   }, [textData, backgroundImageUrl, onGenerated]);
